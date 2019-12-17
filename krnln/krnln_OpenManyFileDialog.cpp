@@ -14,6 +14,7 @@
     参数<3>的名称为“初始过滤器”，类型为“整数型（int）”，可以被省略。如果上一参数提供了有效的过滤器文本，则本参数用作指定初始的过滤器，0为第一个过滤器。如果被省略，则默认值为0。
     参数<4>的名称为“初始目录”，类型为“文本型（text）”，可以被省略。指定当打开对话框时所自动跳转到的目录，如果被省略，则默认为当前目录。
     参数<5>的名称为“不改变目录”，类型为“逻辑型（bool）”，可以被省略。指定在对话框关闭后是否自动返回到进入对话框前的文件目录，如果被省略，则默认值为假。
+    参数<6>的名称为“父窗口”，类型为“通用型（all）”，可以被省略。指定对话框的父窗口,可以是一个"窗口"类型数据或者一个整数型窗口句柄.如果被省略,默认为无.
 
 */
 LIBAPI(void*, krnln_OpenManyFileDialog)
@@ -46,7 +47,7 @@ LIBAPI(void*, krnln_OpenManyFileDialog)
 		}
 
 	}
-	fileinfo.nFilterIndex = pArgInf[2].m_int;
+	fileinfo.nFilterIndex = pArgInf[2].m_int + 1; //从1开始，而易从0开始
 	if(pArgInf[3].m_dtDataType != _SDT_NULL && pArgInf[3].m_pText)
 	{
 		fileinfo.lpstrInitialDir = pArgInf[3].m_pText;
@@ -65,6 +66,13 @@ LIBAPI(void*, krnln_OpenManyFileDialog)
 	if(pArgInf[4].m_dtDataType != _SDT_NULL && pArgInf[4].m_bool)
 	{
 		GetCurrentDirectory (MAX_PATH,preDir);
+	}
+	if(nArgCount>5) //易语言5.3新增加了"父窗口"参数
+	{
+		if(pArgInf[5].m_dtDataType != _SDT_NULL)
+		{
+			fileinfo.hwndOwner = (HWND)pArgInf[5].m_int;
+		}
 	}
 	if(GetOpenFileName(&fileinfo))
 	{
